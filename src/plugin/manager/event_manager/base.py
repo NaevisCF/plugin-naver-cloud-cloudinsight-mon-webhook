@@ -4,6 +4,8 @@ from typing import Union
 from abc import abstractmethod, ABCMeta
 
 from spaceone.core.manager import BaseManager
+from spaceone.core import utils
+
 from plugin.error import *
 
 __all__ = ['ParseManager']
@@ -23,14 +25,6 @@ class ParseManager(BaseManager, metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def generate_event_key(self, **kwargs):
-        pass
-
-    @abstractmethod
-    def get_event_type(self, event_state):
-        pass
-
-    @abstractmethod
     def get_severity(self, event_state):
         pass
 
@@ -46,11 +40,9 @@ class ParseManager(BaseManager, metaclass=ABCMeta):
         raise ERROR_INVALID_WEBHOOK_TYPE(webhook_type=webhook_type)
 
     @staticmethod
-    def convert_to_iso8601(timestamp: int) -> Union[str, None]:
+    def convert_to_iso8601(timestamp: str) -> str:
         if timestamp is not None:
-            timestamp_in_seconds = timestamp / 1000.0
-            dt = datetime.utcfromtimestamp(timestamp_in_seconds)
-            return dt.isoformat() + 'Z'
+            return utils.datetime_to_iso8601(datetime.utcfromtimestamp(int(timestamp)/1000))
         else:
-            return "Undefined"
+            return utils.datetime_to_iso8601(datetime.utcnow())
 
